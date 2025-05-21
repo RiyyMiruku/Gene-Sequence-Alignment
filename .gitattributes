@@ -1,2 +1,6 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+*.bas -text working-tree-encoding=CP950
+*.cls -text working-tree-encoding=CP950
+*.frm -text working-tree-encoding=CP950
