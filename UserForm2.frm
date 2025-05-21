@@ -6,14 +6,14 @@ Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} UserForm2
    ClientTop       =   456
    ClientWidth     =   4176
    OleObjectBlob   =   "UserForm2.frx":0000
-   StartUpPosition =   1  '©ÒÄÝµøµ¡¤¤¥¡
+   StartUpPosition =   1  'ï¿½ï¿½ï¿½Ýµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 End
 Attribute VB_Name = "UserForm2"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
-' **¤ñ¹ï«ö¶s - ¨Ï¥Î Needleman-Wunsch ºâªk**
+' **ï¿½ï¿½ï¿½ï¿½ï¿½s - ï¿½Ï¥ï¿½ Needleman-Wunsch ï¿½ï¿½k**
 Private Sub CommandButton1_Click()
     Dim seq1 As String, seq2 As String
     Dim alignmentA As String, alignmentB As String
@@ -27,67 +27,67 @@ Private Sub CommandButton1_Click()
     'Dim doc As Document
     'Dim rng As Range
     
-    '²M°£ÂÂ¹ï¤ñ¸ê®Æ
+    'ï¿½Mï¿½ï¿½ï¿½Â¹ï¿½ï¿½ï¿½ï¿½
     
-    ' ¨ú±o¨Ï¥ÎªÌ¿é¤Jªº§Ç¦C¡A¨Ã²M²z¼Æ¦r/ªÅ®æ
+    ' ï¿½ï¿½ï¿½oï¿½Ï¥ÎªÌ¿ï¿½Jï¿½ï¿½ï¿½Ç¦Cï¿½Aï¿½Ã²Mï¿½zï¿½Æ¦r/ï¿½Å®ï¿½
     seq1 = UCase(RemoveNonLetters(Me.TextBox1.Text))
     seq2 = UCase(RemoveNonLetters(Me.TextBox2.Text))
 
-    ' ½T«O¿é¤J¤£¬°ªÅ
+    ' ï¿½Tï¿½Oï¿½ï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     If seq1 = "" Or seq2 = "" Then
-        MsgBox "½Ð¿é¤J¦³®Äªº°ò¦]©Î³J¥Õ½è§Ç¦C¡I", vbExclamation
+        MsgBox "ï¿½Ð¿ï¿½Jï¿½ï¿½ï¿½Äªï¿½ï¿½ï¿½]ï¿½Î³Jï¿½Õ½ï¿½Ç¦Cï¿½I", vbExclamation
         Exit Sub
     End If
 
-    ' ³]©w¤ñ¹ï°Ñ¼Æ
+    ' ï¿½]ï¿½wï¿½ï¿½ï¿½Ñ¼ï¿½
     matchScore = 1
     mismatchPenalty = -1
     gapPenalty = -1
 
-    ' °õ¦æ¤ñ¹ï
+    ' ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     Call AlignSequences(seq1, seq2, matchScore, mismatchPenalty, gapPenalty, alignmentA, alignmentB)
     
     minLength = Len(alignmentA)
     matchCount = 0
-    differences = "®t²§¦ì¸m¡G" & vbCrLf
+    differences = "ï¿½tï¿½ï¿½ï¿½ï¿½mï¿½G" & vbCrLf
 
-    ' ªì©l¤Æ Word ¤å¥ó¾Þ§@
+    ' ï¿½ï¿½lï¿½ï¿½ Word ï¿½ï¿½ï¿½Þ§@
     'Set doc = ActiveDocument
     'Set rng = doc.Range(Start:=doc.Content.End - 1, End:=doc.Content.End)
 
-    ' ¤ñ¸û§Ç¦C¨Ã°ª«G®t²§
+    ' ï¿½ï¿½ï¿½ï¿½Ç¦Cï¿½Ã°ï¿½ï¿½Gï¿½tï¿½ï¿½
     
     For i = 1 To minLength
         If Mid(alignmentA, i, 1) = Mid(alignmentB, i, 1) Then
             matchCount = matchCount + 1
         Else
-            differences = differences & "¦ì¸m " & i & ": " & _
-                          Mid(alignmentA, i, 1) & " ¡Ú " & Mid(alignmentB, i, 1) & vbCrLf
-            ' ¦b Word ¤å¥ó¤¤¼Ð¥Ü¤£¦Pªº³¡¤À
+            differences = differences & "ï¿½ï¿½m " & i & ": " & _
+                          Mid(alignmentA, i, 1) & " ï¿½ï¿½ " & Mid(alignmentB, i, 1) & vbCrLf
+            ' ï¿½b Word ï¿½ï¿½ó¤¤¼Ð¥Ü¤ï¿½ï¿½Pï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             'rng.InsertAfter Mid(alignmentA, i, 1)
             'rng.Font.ColorIndex = wdRed
         End If
 
-        ' §ó·s¶i«×±ø
+        ' ï¿½ï¿½sï¿½iï¿½×±ï¿½
         Me.LabelProgress.Width = (i / minLength) * 200
         DoEvents
     Next i
 
-    ' ­pºâ¬Û¦ü«×
+    ' ï¿½pï¿½ï¿½Û¦ï¿½ï¿½ï¿½
     similarity = (matchCount / minLength) * 100
 
-    ' Åã¥Üµ²ªG
-    Me.TextBox_Result.Text = "¬Û¦ü«×¡G" & Format(similarity, "0.00") & "%" & vbCrLf & _
-                        "¤ñ¹ïªø«×¡G" & minLength & " ­Ó¦r¤¸" & vbCrLf & _
-                        IIf(matchCount = minLength, "§¹¥þ¤@­P¡I", differences)
+    ' ï¿½ï¿½Üµï¿½ï¿½G
+    Me.TextBox_Result.Text = "ï¿½Û¦ï¿½ï¿½×¡G" & Format(similarity, "0.00") & "%" & vbCrLf & _
+                        "ï¿½ï¿½ï¿½ï¿½ï¿½×¡G" & minLength & " ï¿½Ó¦rï¿½ï¿½" & vbCrLf & _
+                        IIf(matchCount = minLength, "ï¿½ï¿½ï¿½ï¿½ï¿½@ï¿½Pï¿½I", differences)
 
-    ' Åã¥Üµ²ªG©ó¥i±²°Êªº TextBox¡A¹ï»ôµ²ªG
-    Me.TextBox3.Text = "³Ì¨Î¤ñ¹ïµ²ªG¡G" & vbCrLf & _
+    ' ï¿½ï¿½Üµï¿½ï¿½Gï¿½ï¿½iï¿½ï¿½ï¿½Êªï¿½ TextBoxï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½G
+    Me.TextBox3.Text = "ï¿½Ì¨Î¤ï¿½ïµ²ï¿½Gï¿½G" & vbCrLf & _
                              AlignTextForDisplay(alignmentA) & vbCrLf & _
                              AlignTextForDisplay(alignmentB)
 End Sub
 
-' **Needleman-Wunsch ¤ñ¹ïºtºâªk**
+' **Needleman-Wunsch ï¿½ï¿½ï¿½tï¿½ï¿½k**
 Sub AlignSequences(seq1 As String, seq2 As String, matchScore As Integer, mismatchPenalty As Integer, gapPenalty As Integer, alignmentA As String, alignmentB As String)
     Dim m As Integer, n As Integer
     Dim score() As Integer, traceback() As String
@@ -97,23 +97,23 @@ Sub AlignSequences(seq1 As String, seq2 As String, matchScore As Integer, mismat
     m = Len(seq1)
     n = Len(seq2)
 
-    ' ªì©l¤Æ¯x°}
+    ' ï¿½ï¿½lï¿½Æ¯xï¿½}
     ReDim score(0 To m, 0 To n)
     ReDim traceback(0 To m, 0 To n)
 
     For i = 0 To m
         score(i, 0) = i * gapPenalty
-        traceback(i, 0) = "U" ' ¦V¤W
+        traceback(i, 0) = "U" ' ï¿½Vï¿½W
     Next i
 
     For j = 0 To n
         score(0, j) = j * gapPenalty
-        traceback(0, j) = "L" ' ¦V¥ª
+        traceback(0, j) = "L" ' ï¿½Vï¿½ï¿½
     Next j
 
-    traceback(0, 0) = "E" ' µ²§ô¼Ð°O
+    traceback(0, 0) = "E" ' ï¿½ï¿½ï¿½ï¿½ï¿½Ð°O
 
-    ' ¶ñ¥R¯x°}¡]¤£¨Ï¥Î WorksheetFunction¡^
+    ' ï¿½ï¿½Rï¿½xï¿½}ï¿½]ï¿½ï¿½ï¿½Ï¥ï¿½ WorksheetFunctionï¿½^
     For i = 1 To m
         For j = 1 To n
             If Mid(seq1, i, 1) = Mid(seq2, j, 1) Then
@@ -125,21 +125,21 @@ Sub AlignSequences(seq1 As String, seq2 As String, matchScore As Integer, mismat
             scoreUp = score(i - 1, j) + gapPenalty
             scoreLeft = score(i, j - 1) + gapPenalty
 
-            ' ¨ú³Ì¤j­È¡]¤â°Ê­pºâ¡^
+            ' ï¿½ï¿½ï¿½Ì¤jï¿½È¡]ï¿½ï¿½Ê­pï¿½ï¿½^
             If scoreDiag >= scoreUp And scoreDiag >= scoreLeft Then
                 score(i, j) = scoreDiag
-                traceback(i, j) = "D" ' ¹ï¨¤½u
+                traceback(i, j) = "D" ' ï¿½ï¨¤ï¿½u
             ElseIf scoreUp >= scoreLeft Then
                 score(i, j) = scoreUp
-                traceback(i, j) = "U" ' ¦V¤W
+                traceback(i, j) = "U" ' ï¿½Vï¿½W
             Else
                 score(i, j) = scoreLeft
-                traceback(i, j) = "L" ' ¦V¥ª
+                traceback(i, j) = "L" ' ï¿½Vï¿½ï¿½
             End If
         Next j
     Next i
 
-    ' °l·¹¯x°}¡Aºc«Ø¤ñ¹ïµ²ªG
+    ' ï¿½lï¿½ï¿½ï¿½xï¿½}ï¿½Aï¿½cï¿½Ø¤ï¿½ïµ²ï¿½G
     alignmentA = ""
     alignmentB = ""
     i = m
@@ -164,7 +164,7 @@ Sub AlignSequences(seq1 As String, seq2 As String, matchScore As Integer, mismat
     Loop
 End Sub
 
-' **¨ç¼Æ¡G²M²z¿é¤J¡A¥u«O¯d A-Z**
+' **ï¿½ï¿½Æ¡Gï¿½Mï¿½zï¿½ï¿½Jï¿½Aï¿½uï¿½Oï¿½d A-Z**
 Function RemoveNonLetters(ByVal inputStr As String) As String
     Dim i As Integer, outputStr As String
     outputStr = ""
@@ -178,15 +178,15 @@ Function RemoveNonLetters(ByVal inputStr As String) As String
     RemoveNonLetters = outputStr
 End Function
 
-' **¨ç¼Æ¡G¹ï»ôÅã¥Üªºµ²ªG¡A²K¥[ªÅ®æ¥H¨Ï¨C¦C¹ï»ô**
+' **ï¿½ï¿½Æ¡Gï¿½ï¿½ï¿½ï¿½ï¿½Üªï¿½ï¿½ï¿½ï¿½Gï¿½Aï¿½Kï¿½[ï¿½Å®ï¿½Hï¿½Ï¨Cï¿½Cï¿½ï¿½ï¿½**
 Function AlignTextForDisplay(ByVal inputStr As String) As String
     Dim alignedStr As String
     Dim i As Integer
     
-    ' ¨Ï¥Î¾A·íªºªÅ®æ¨Ó¹ï»ô
+    ' ï¿½Ï¥Î¾Aï¿½ï¿½ï¿½ï¿½ï¿½Å®ï¿½Ó¹ï¿½ï¿½
     alignedStr = ""
     For i = 1 To Len(inputStr)
-        alignedStr = alignedStr & Mid(inputStr, i, 1) & " " ' ¨C­Ó¦r¤¸«á­±¥[¤@­ÓªÅ®æ
+        alignedStr = alignedStr & Mid(inputStr, i, 1) & " " ' ï¿½Cï¿½Ó¦rï¿½ï¿½ï¿½á­±ï¿½[ï¿½@ï¿½ÓªÅ®ï¿½
     Next i
 
     AlignTextForDisplay = alignedStr
