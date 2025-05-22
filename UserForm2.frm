@@ -6,14 +6,14 @@ Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} UserForm2
    ClientTop       =   456
    ClientWidth     =   4176
    OleObjectBlob   =   "UserForm2.frx":0000
-   StartUpPosition =   1  '���ݵ�������
+   StartUpPosition =   1  '所屬視窗中央
 End
 Attribute VB_Name = "UserForm2"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
-' **�����s - �ϥ� Needleman-Wunsch ��k**
+' **比對按鈕 - 使用 Needleman-Wunsch 算法**
 Private Sub CommandButton1_Click()
     Dim seq1 As String, seq2 As String
     Dim alignmentA As String, alignmentB As String
@@ -27,67 +27,67 @@ Private Sub CommandButton1_Click()
     'Dim doc As Document
     'Dim rng As Range
     
-    '�M���¹����
+    '清除舊對比資料
     
-    ' ���o�ϥΪ̿�J���ǦC�A�òM�z�Ʀr/�Ů�
+    ' 取得使用者輸入的序列，並清理數字/空格
     seq1 = UCase(RemoveNonLetters(Me.TextBox1.Text))
     seq2 = UCase(RemoveNonLetters(Me.TextBox2.Text))
 
-    ' �T�O��J������
+    ' 確保輸入不為空
     If seq1 = "" Or seq2 = "" Then
-        MsgBox "�п�J���Ī���]�γJ�ս�ǦC�I", vbExclamation
+        MsgBox "請輸入有效的基因或蛋白質序列！", vbExclamation
         Exit Sub
     End If
 
-    ' �]�w���Ѽ�
+    ' 設定比對參數
     matchScore = 1
     mismatchPenalty = -1
     gapPenalty = -1
 
-    ' ������
+    ' 執行比對
     Call AlignSequences(seq1, seq2, matchScore, mismatchPenalty, gapPenalty, alignmentA, alignmentB)
     
     minLength = Len(alignmentA)
     matchCount = 0
-    differences = "�t����m�G" & vbCrLf
+    differences = "差異位置：" & vbCrLf
 
-    ' ��l�� Word ���ާ@
+    ' 初始化 Word 文件操作
     'Set doc = ActiveDocument
     'Set rng = doc.Range(Start:=doc.Content.End - 1, End:=doc.Content.End)
 
-    ' ����ǦC�ð��G�t��
+    ' 比較序列並高亮差異
     
     For i = 1 To minLength
         If Mid(alignmentA, i, 1) = Mid(alignmentB, i, 1) Then
             matchCount = matchCount + 1
         Else
-            differences = differences & "��m " & i & ": " & _
-                          Mid(alignmentA, i, 1) & " �� " & Mid(alignmentB, i, 1) & vbCrLf
-            ' �b Word ��󤤼Хܤ��P������
+            differences = differences & "位置 " & i & ": " & _
+                          Mid(alignmentA, i, 1) & " ≠ " & Mid(alignmentB, i, 1) & vbCrLf
+            ' 在 Word 文件中標示不同的部分
             'rng.InsertAfter Mid(alignmentA, i, 1)
             'rng.Font.ColorIndex = wdRed
         End If
 
-        ' ��s�i�ױ�
+        ' 更新進度條
         Me.LabelProgress.Width = (i / minLength) * 200
         DoEvents
     Next i
 
-    ' �p��ۦ���
+    ' 計算相似度
     similarity = (matchCount / minLength) * 100
 
-    ' ��ܵ��G
-    Me.TextBox_Result.Text = "�ۦ��סG" & Format(similarity, "0.00") & "%" & vbCrLf & _
-                        "�����סG" & minLength & " �Ӧr��" & vbCrLf & _
-                        IIf(matchCount = minLength, "�����@�P�I", differences)
+    ' 顯示結果
+    Me.TextBox_Result.Text = "相似度：" & Format(similarity, "0.00") & "%" & vbCrLf & _
+                        "比對長度：" & minLength & " 個字元" & vbCrLf & _
+                        IIf(matchCount = minLength, "完全一致！", differences)
 
-    ' ��ܵ��G��i���ʪ� TextBox�A������G
-    Me.TextBox3.Text = "�̨Τ�ﵲ�G�G" & vbCrLf & _
+    ' 顯示結果於可捲動的 TextBox，對齊結果
+    Me.TextBox3.Text = "最佳比對結果：" & vbCrLf & _
                              AlignTextForDisplay(alignmentA) & vbCrLf & _
                              AlignTextForDisplay(alignmentB)
 End Sub
 
-' **Needleman-Wunsch ���t��k**
+' **Needleman-Wunsch 比對演算法**
 Sub AlignSequences(seq1 As String, seq2 As String, matchScore As Integer, mismatchPenalty As Integer, gapPenalty As Integer, alignmentA As String, alignmentB As String)
     Dim m As Integer, n As Integer
     Dim score() As Integer, traceback() As String
@@ -97,23 +97,23 @@ Sub AlignSequences(seq1 As String, seq2 As String, matchScore As Integer, mismat
     m = Len(seq1)
     n = Len(seq2)
 
-    ' ��l�Ưx�}
+    ' 初始化矩陣
     ReDim score(0 To m, 0 To n)
     ReDim traceback(0 To m, 0 To n)
 
     For i = 0 To m
         score(i, 0) = i * gapPenalty
-        traceback(i, 0) = "U" ' �V�W
+        traceback(i, 0) = "U" ' 向上
     Next i
 
     For j = 0 To n
         score(0, j) = j * gapPenalty
-        traceback(0, j) = "L" ' �V��
+        traceback(0, j) = "L" ' 向左
     Next j
 
-    traceback(0, 0) = "E" ' �����аO
+    traceback(0, 0) = "E" ' 結束標記
 
-    ' ��R�x�}�]���ϥ� WorksheetFunction�^
+    ' 填充矩陣（不使用 WorksheetFunction）
     For i = 1 To m
         For j = 1 To n
             If Mid(seq1, i, 1) = Mid(seq2, j, 1) Then
@@ -125,21 +125,21 @@ Sub AlignSequences(seq1 As String, seq2 As String, matchScore As Integer, mismat
             scoreUp = score(i - 1, j) + gapPenalty
             scoreLeft = score(i, j - 1) + gapPenalty
 
-            ' ���̤j�ȡ]��ʭp��^
+            ' 取最大值（手動計算）
             If scoreDiag >= scoreUp And scoreDiag >= scoreLeft Then
                 score(i, j) = scoreDiag
-                traceback(i, j) = "D" ' �﨤�u
+                traceback(i, j) = "D" ' 對角線
             ElseIf scoreUp >= scoreLeft Then
                 score(i, j) = scoreUp
-                traceback(i, j) = "U" ' �V�W
+                traceback(i, j) = "U" ' 向上
             Else
                 score(i, j) = scoreLeft
-                traceback(i, j) = "L" ' �V��
+                traceback(i, j) = "L" ' 向左
             End If
         Next j
     Next i
 
-    ' �l���x�}�A�c�ؤ�ﵲ�G
+    ' 追溯矩陣，構建比對結果
     alignmentA = ""
     alignmentB = ""
     i = m
@@ -164,7 +164,7 @@ Sub AlignSequences(seq1 As String, seq2 As String, matchScore As Integer, mismat
     Loop
 End Sub
 
-' **��ơG�M�z��J�A�u�O�d A-Z**
+' **函數：清理輸入，只保留 A-Z**
 Function RemoveNonLetters(ByVal inputStr As String) As String
     Dim i As Integer, outputStr As String
     outputStr = ""
@@ -178,15 +178,15 @@ Function RemoveNonLetters(ByVal inputStr As String) As String
     RemoveNonLetters = outputStr
 End Function
 
-' **��ơG�����ܪ����G�A�K�[�Ů�H�ϨC�C���**
+' **函數：對齊顯示的結果，添加空格以使每列對齊**
 Function AlignTextForDisplay(ByVal inputStr As String) As String
     Dim alignedStr As String
     Dim i As Integer
     
-    ' �ϥξA�����Ů�ӹ��
+    ' 使用適當的空格來對齊
     alignedStr = ""
     For i = 1 To Len(inputStr)
-        alignedStr = alignedStr & Mid(inputStr, i, 1) & " " ' �C�Ӧr���᭱�[�@�ӪŮ�
+        alignedStr = alignedStr & Mid(inputStr, i, 1) & " " ' 每個字元後面加一個空格
     Next i
 
     AlignTextForDisplay = alignedStr

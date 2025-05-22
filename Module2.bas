@@ -1,4 +1,4 @@
 Attribute VB_Name = "Module2"
 Sub ShowCompareForm()
-    UserForm2.Show vbModeless ' «D¼ÒºA¡A¤¹³\¦P®É¾Ş§@ Word
+    UserForm2.Show vbModeless ' éæ¨¡æ…‹ï¼Œå…è¨±åŒæ™‚æ“ä½œ Word
 End Sub
